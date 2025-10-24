@@ -1,6 +1,8 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
+
 
 // Fix __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -24,6 +26,11 @@ export default {
   },
   plugins: [
     new HtmlWebpackPlugin({ template: './public/index.html' }),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: 'public/samples/piano', to: 'samples/piano' },
+      ],
+    }),
   ],
   devServer: {
     static: './dist',
