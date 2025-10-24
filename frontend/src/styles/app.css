@@ -1,1 +1,77 @@
-/* Empty placeholder, add styles later */
+.piano-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin: 2rem auto;
+    position: relative;
+    user-select: none;
+    width: max-content;
+  }
+  
+  .white-keys {
+    display: flex;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .white-key {
+    width: 60px;
+    height: 200px;
+    border: 1px solid #000;
+    background-color: #fff;
+    position: relative;
+    margin: 0;
+    border-radius: 0 0 5px 5px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  
+  .white-key.pressed {
+    background-color: #ddd;
+  }
+  
+  .white-key .note-label {
+    font-size: 10px;
+    color: #000;
+    padding-bottom: 5px;
+  }
+  
+  .black-keys {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    height: 120px;
+  }
+  
+  .black-key {
+    width: 40px;
+    height: 120px;
+    background-color: #000;
+    border: 1px solid #333;
+    border-radius: 0 0 3px 3px;
+    position: absolute;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    transition: background 0.1s;
+  }
+  
+  .black-key.pressed {
+    background-color: #555;
+  }
+  
+  .black-key .note-label {
+    font-size: 10px;
+    color: #fff;
+    padding-bottom: 5px;
+  }
+
+  .black-key {
+    transform: translateX(-50%);
+  }
+  
