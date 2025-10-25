@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useRef } from "react";
 import Piano from "./components/Piano";
+import NoteRain from "./components/NoteRain";
 import brownPaper from "./assets/brown-paper.jpg";
 
 function App() {
+  const pianoFrameRef = useRef<HTMLDivElement>(null);
+
   return (
     <div
       style={{
@@ -17,12 +20,20 @@ function App() {
         backgroundRepeat: "repeat",
         backgroundSize: "auto",
         backgroundPosition: "center",
+        position: "relative", // for absolute canvas
+        overflow: "hidden",
       }}
     >
-      <h1 style={{ textAlign: "center", marginBottom: "40px" }}>
+
+      <NoteRain frameRef={pianoFrameRef} />
+
+      <h1 style={{ textAlign: "center", marginBottom: "40px", zIndex: 4 }}>
         Etudio - Chopin AI Composer
       </h1>
-      <Piano />
+
+      <div ref={pianoFrameRef} style={{ position: "relative", zIndex: 3 }}>
+        <Piano />
+      </div>
     </div>
   );
 }
