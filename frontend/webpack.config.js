@@ -28,10 +28,12 @@ export default {
   plugins: [
     new HtmlWebpackPlugin({ template: './public/index.html' }),
     new CopyWebpackPlugin({
-      patterns: [
-        { from: 'public/samples/piano', to: 'samples/piano' },
-      ],
-    }),
+    patterns: [
+      { from: 'public/favicon.svg', to: '.' },
+      { from: 'public/samples/piano', to: 'samples/piano' },
+    ],
+  }),
+
   ],
   devServer: {
     static: './dist',
