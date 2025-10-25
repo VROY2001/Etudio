@@ -40,7 +40,6 @@ const Piano: React.FC = () => {
     { note: "E5",  isBlack: false, fileName: "E5.mp3" },
   ];
 
-  // Preload oak image
   useEffect(() => {
     const img = new Image();
     img.src = oakTexture;
@@ -61,7 +60,6 @@ const Piano: React.FC = () => {
   
     setSampler(samplerInstance);
   
-    // ✅ Proper cleanup function (void return)
     return () => {
       samplerInstance.dispose();
     };
@@ -78,7 +76,7 @@ const Piano: React.FC = () => {
       const transposed = `${base}${octave}`;
   
       // Play note with Tone's envelope handling sustain & release
-      sampler.triggerAttackRelease(transposed, "2n"); // 2n = half-note duration
+      sampler.triggerAttackRelease(transposed, "2n");
   
       // Visual press
       setPressedKeys((prev) => new Set(prev).add(note));
