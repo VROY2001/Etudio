@@ -40,6 +40,7 @@ const Piano: React.FC = () => {
     { note: "E5",  isBlack: false, fileName: "E5.mp3" },
   ];
 
+  // oak texture preloading
   useEffect(() => {
     const img = new Image();
     img.src = oakTexture;
