@@ -1,15 +1,17 @@
 import React, { useEffect, useState, useCallback } from "react";
 import * as Tone from "tone";
+import oakTexture from "../assets/oak.jpg";
 
 interface PianoKey {
-  note: string;      // Tone.js note name
+  note: string;
   isBlack: boolean;
-  fileName: string;  // actual mp3 file in public folder
+  fileName: string;
 }
 
 const Piano: React.FC = () => {
   const [sampler, setSampler] = useState<Tone.Sampler | null>(null);
   const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const keys: PianoKey[] = [
     { note: "F4",  isBlack: false, fileName: "F4.mp3" },
@@ -38,8 +40,15 @@ const Piano: React.FC = () => {
     { note: "E6",  isBlack: false, fileName: "E6.mp3" },
   ];
 
+  // Preload oak image
   useEffect(() => {
-    // Create the sampler with correct mapping
+    const img = new Image();
+    img.src = oakTexture;
+    img.onload = () => setImageLoaded(true);
+  }, []);
+
+  // Initialize sampler
+  useEffect(() => {
     const samplerInstance = new Tone.Sampler({
       urls: keys.reduce((acc, key) => ({ ...acc, [key.note]: key.fileName }), {}),
       baseUrl: "/samples/piano/",
@@ -76,49 +85,67 @@ const Piano: React.FC = () => {
   const blackKeys = keys.filter((k) => k.isBlack);
 
   return (
-    <div className="piano-container" style={{ position: "relative", width: whiteKeys.length * 60 }}>
-      <div className="white-keys" style={{ display: "flex", zIndex: 1 }}>
-        {whiteKeys.map((key) => (
-          <button
-            key={key.note}
-            className={`piano-key white-key ${pressedKeys.has(key.note) ? "pressed" : ""}`}
-            style={{ width: 60, height: 200, margin: 0, position: "relative" }}
-            onMouseDown={() => playNote(key.note)}
-            onTouchStart={(e) => { e.preventDefault(); playNote(key.note); }}
-          >
-            <span className="note-label">{key.note}</span>
-          </button>
-        ))}
-      </div>
+    <>
+      {imageLoaded ? (
+        <div
+          className="piano-frame"
+          style={{
+            backgroundImage: `url(${oakTexture})`,
+            opacity: imageLoaded ? 1 : 0,
+            transition: "opacity 0.5s ease-in-out",
+          }}
+        >
+          <div className="piano-container" style={{ width: whiteKeys.length * 60 }}>
+            <div className="white-keys">
+              {whiteKeys.map((key) => (
+                <button
+                  key={key.note}
+                  className={`piano-key white-key ${pressedKeys.has(key.note) ? "pressed" : ""}`}
+                  onMouseDown={() => playNote(key.note)}
+                  onTouchStart={(e) => { e.preventDefault(); playNote(key.note); }}
+                >
+                  <span className="note-label">{key.note}</span>
+                </button>
+              ))}
+            </div>
 
-      <div className="black-keys" style={{ position: "absolute", top: 0, left: 0, zIndex: 2 }}>
-        {blackKeys.map((key) => {
-          const keyIndex = keys.findIndex((k) => k.note === key.note);
-          const blackKeyOffset = keyIndex - keys.slice(0, keyIndex).filter(k => k.isBlack).length;
-          const left = blackKeyOffset * 60 - 15;
+            <div className="black-keys">
+              {blackKeys.map((key) => {
+                const whiteWidth = 60;
+                const blackWidth = 40;
 
-          return (
-            <button
-              key={key.note}
-              className={`black-key ${pressedKeys.has(key.note) ? "pressed" : ""}`}
-              style={{
-                width: 40,
-                height: 120,
-                backgroundColor: "black",
-                color: "white",
-                position: "absolute",
-                left,
-                top: 0,
-              }}
-              onMouseDown={() => playNote(key.note)}
-              onTouchStart={(e) => { e.preventDefault(); playNote(key.note); }}
-            >
-              <span className="note-label">{key.note}</span>
-            </button>
-          );
-        })}
-      </div>
-    </div>
+                const blackToWhiteBefore: Record<string, string> = {
+                  "C#": "C",
+                  "D#": "D",
+                  "F#": "F",
+                  "G#": "G",
+                  "A#": "A",
+                };
+
+                const [noteBase, octave] = key.note.match(/^([A-G]#?)(\d)$/)!.slice(1);
+                const whiteBefore = `${blackToWhiteBefore[noteBase]}${octave}`;
+                const whiteIndex = whiteKeys.findIndex((k) => k.note === whiteBefore);
+                const left = (whiteIndex + 1) * whiteWidth - blackWidth / 2;
+
+                return (
+                  <button
+                    key={key.note}
+                    className={`black-key ${pressedKeys.has(key.note) ? "pressed" : ""}`}
+                    style={{ left }}
+                    onMouseDown={() => playNote(key.note)}
+                    onTouchStart={(e) => { e.preventDefault(); playNote(key.note); }}
+                  >
+                    <span className="note-label">{key.note}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div style={{ textAlign: "center" }}>Loading piano...</div>
+      )}
+    </>
   );
 };
 
