@@ -29,7 +29,7 @@ export default {
     new HtmlWebpackPlugin({ template: './public/index.html' }),
     new CopyWebpackPlugin({
     patterns: [
-      { from: 'public/favicon.svg', to: '.' },
+      { from: 'public/Etudio.svg', to: '.' },
       { from: 'public/samples/piano', to: 'samples/piano' },
     ],
   }),
