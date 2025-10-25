@@ -20,7 +20,7 @@ function App() {
         backgroundRepeat: "repeat",
         backgroundSize: "auto",
         backgroundPosition: "center",
-        position: "relative", // for absolute canvas
+        position: "relative",
         overflow: "hidden",
       }}
     >
