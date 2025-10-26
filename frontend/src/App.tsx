@@ -26,10 +26,53 @@ function App() {
     >
 
       <NoteRain frameRef={pianoFrameRef} />
-
-      <h1 style={{ textAlign: "center", marginBottom: "40px", zIndex: 4 }}>
-        Etudio - Chopin AI Composer
-      </h1>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          marginBottom: "40px",
+          zIndex: 4,
+          position: "relative",
+        }}
+      >
+        <div
+          style={{
+            position: "relative",
+            display: "inline-block",
+          }}
+        >
+          <img
+            src="/Etudio.svg"
+            alt="Etudio Logo"
+            style={{
+              width: "200px"
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              bottom: "-30px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              backgroundColor: "rgba(0,0,0,0.6)",
+              padding: "6px 12px",
+              borderRadius: "12px",
+            }}
+          >
+            <span
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                fontSize: "1.5rem",
+                fontFamily: "times new roman, serif",
+              }}
+            >
+              Etudio
+            </span>
+          </div>
+        </div>
+      </div>
 
       <div ref={pianoFrameRef} style={{ position: "relative", zIndex: 3 }}>
         <Piano />

@@ -30,7 +30,6 @@ export default {
     new CopyWebpackPlugin({
     patterns: [
       { from: 'public/Etudio.svg', to: '.' },
-      { from: 'public/Etudio.png', to: '.' },
       { from: 'public/samples/piano', to: 'samples/piano' },
     ],
   }),
