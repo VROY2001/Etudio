@@ -13,6 +13,8 @@ const Piano: React.FC = () => {
   const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
   const [imageLoaded, setImageLoaded] = useState(false);
 
+  const pianoContainerRef = React.useRef<HTMLDivElement>(null);
+
   const keys: PianoKey[] = [
     { note: "F3",  isBlack: false, fileName: "F3.mp3" },
     { note: "F#3", isBlack: true,  fileName: "Fs3.mp3" },
@@ -91,7 +93,24 @@ const Piano: React.FC = () => {
     },
     [sampler]
   );
-  
+
+  useEffect(() => {
+    const container = pianoContainerRef.current;
+    if (!container) return;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      e.preventDefault();
+      const target = e.target as HTMLElement;
+      const note = target.dataset.note;
+      if (note) playNote(note);
+    };
+
+    container.addEventListener("touchstart", handleTouchStart as EventListener, { passive: false });
+
+    return () => {
+      container.removeEventListener("touchstart", handleTouchStart as EventListener);
+    };
+  }, [playNote]);
 
   const whiteKeys = keys.filter((k) => !k.isBlack);
   const blackKeys = keys.filter((k) => k.isBlack);
@@ -107,14 +126,14 @@ const Piano: React.FC = () => {
             transition: "opacity 0.5s ease-in-out",
           }}
         >
-          <div className="piano-container" style={{ width: whiteKeys.length * 60 }}>
+          <div className="piano-container" ref={pianoContainerRef} style={{ width: whiteKeys.length * 60 }}>
             <div className="white-keys">
               {whiteKeys.map((key) => (
                 <button
+                  data-note={key.note}
                   key={key.note}
                   className={`piano-key white-key ${pressedKeys.has(key.note) ? "pressed" : ""}`}
                   onMouseDown={() => playNote(key.note)}
-                  onTouchStart={(e) => { e.preventDefault(); playNote(key.note); }}
                 >
                   <span className="note-label">{key.note}</span>
                 </button>
@@ -141,11 +160,11 @@ const Piano: React.FC = () => {
 
                 return (
                   <button
+                    data-note={key.note}
                     key={key.note}
                     className={`black-key ${pressedKeys.has(key.note) ? "pressed" : ""}`}
                     style={{ left }}
                     onMouseDown={() => playNote(key.note)}
-                    onTouchStart={(e) => { e.preventDefault(); playNote(key.note); }}
                   >
                     <span className="note-label">{key.note}</span>
                   </button>
