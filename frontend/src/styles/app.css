@@ -80,6 +80,7 @@ h1 {
 
 .white-key.pressed {
   background-color: #ddd;
+  transform: translateY(2px);
 }
 
 .white-key .note-label {
