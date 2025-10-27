@@ -16,6 +16,11 @@ const Piano: React.FC = () => {
   const pianoContainerRef = React.useRef<HTMLDivElement>(null);
 
   const keys: PianoKey[] = [
+    { note: "C3",  isBlack: false, fileName: "C3.mp3" },
+    { note: "C#3", isBlack: true,  fileName: "Cs3.mp3" },
+    { note: "D3",  isBlack: false, fileName: "D3.mp3" },
+    { note: "D#3", isBlack: true,  fileName: "Ds3.mp3" },
+    { note: "E3",  isBlack: false, fileName: "E3.mp3" },
     { note: "F3",  isBlack: false, fileName: "F3.mp3" },
     { note: "F#3", isBlack: true,  fileName: "Fs3.mp3" },
     { note: "G3",  isBlack: false, fileName: "G3.mp3" },
@@ -40,6 +45,25 @@ const Piano: React.FC = () => {
     { note: "D5",  isBlack: false, fileName: "D5.mp3" },
     { note: "D#5", isBlack: true,  fileName: "Ds5.mp3" },
     { note: "E5",  isBlack: false, fileName: "E5.mp3" },
+    { note: "F5",  isBlack: false, fileName: "F5.mp3" },
+    { note: "F#5", isBlack: true,  fileName: "Fs5.mp3" },
+    { note: "G5",  isBlack: false, fileName: "G5.mp3" },
+    { note: "G#5", isBlack: true,  fileName: "Gs5.mp3" },
+    { note: "A5",  isBlack: false, fileName: "A5.mp3" },
+    { note: "A#5", isBlack: true,  fileName: "As5.mp3" },
+    { note: "B5",  isBlack: false, fileName: "B5.mp3" },
+    { note: "C6",  isBlack: false, fileName: "C6.mp3" },
+    { note: "C#6", isBlack: true,  fileName: "Cs6.mp3"},
+    { note: "D6",  isBlack: false, fileName: "D6.mp3" },
+    { note: "D#6", isBlack: true,  fileName: "Ds6.mp3" },
+    { note: "E6",  isBlack: false, fileName: "E6.mp3" },
+    { note: "F6",  isBlack: false, fileName: "F6.mp3" },
+    { note: "F#6", isBlack: true,  fileName: "Fs6.mp3"},
+    { note: "G6",  isBlack: false, fileName: "G6.mp3" },
+    { note: "G#6", isBlack: true,  fileName: "Gs6.mp3" },
+    { note: "A6",  isBlack: false, fileName: "A6.mp3" },
+    { note: "A#6", isBlack: true,  fileName: "As6.mp3" },
+    { note: "B6",  isBlack: false, fileName: "B6.mp3" },
   ];
 
   // oak texture preloading
@@ -57,7 +81,7 @@ const Piano: React.FC = () => {
     }).toDestination();
   
     // Add gentle ADSR envelope for smoother sustain and fadeout
-    samplerInstance.attack = 0.01;
+    samplerInstance.attack = 0.03;
     samplerInstance.release = 1.2;
     samplerInstance.volume.value = -2;
   
@@ -126,7 +150,7 @@ const Piano: React.FC = () => {
             transition: "opacity 0.5s ease-in-out",
           }}
         >
-          <div className="piano-container" ref={pianoContainerRef} style={{ width: whiteKeys.length * 60 }}>
+          <div className="piano-container" ref={pianoContainerRef} style={{ width: whiteKeys.length * 30 }}>
             <div className="white-keys">
               {whiteKeys.map((key) => (
                 <button
@@ -142,8 +166,8 @@ const Piano: React.FC = () => {
 
             <div className="black-keys">
               {blackKeys.map((key) => {
-                const whiteWidth = 60;
-                const blackWidth = 40;
+                const whiteWidth = 30;
+                const blackWidth = 20;
 
                 const blackToWhiteBefore: Record<string, string> = {
                   "C#": "C",
