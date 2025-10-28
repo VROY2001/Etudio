@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import * as Tone from "tone";
 import oakTexture from "../assets/oak.jpg";
+import PianoKeysSVG from "../assets/Octave"; // your new React SVG component
 
 interface PianoKey {
   note: string;
@@ -13,8 +14,9 @@ const Piano: React.FC = () => {
   const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  const pianoContainerRef = React.useRef<HTMLDivElement>(null);
+  const pianoContainerRef = useRef<HTMLDivElement>(null);
 
+  // Define your keys (you can expand as needed)
   const keys: PianoKey[] = [
     { note: "C3",  isBlack: false, fileName: "C3.mp3" },
     { note: "C#3", isBlack: true,  fileName: "Cs3.mp3" },
@@ -53,12 +55,12 @@ const Piano: React.FC = () => {
     { note: "A#5", isBlack: true,  fileName: "As5.mp3" },
     { note: "B5",  isBlack: false, fileName: "B5.mp3" },
     { note: "C6",  isBlack: false, fileName: "C6.mp3" },
-    { note: "C#6", isBlack: true,  fileName: "Cs6.mp3"},
+    { note: "C#6", isBlack: true,  fileName: "Cs6.mp3" },
     { note: "D6",  isBlack: false, fileName: "D6.mp3" },
     { note: "D#6", isBlack: true,  fileName: "Ds6.mp3" },
     { note: "E6",  isBlack: false, fileName: "E6.mp3" },
-    { note: "F6",  isBlack: false, fileName: "F6.mp3" },
-    { note: "F#6", isBlack: true,  fileName: "Fs6.mp3"},
+    { note: "F6",  isBlack: false, fileName: "F6.mp3"},
+    { note: "F#6", isBlack: true,  fileName: "Fs6.mp3" },
     { note: "G6",  isBlack: false, fileName: "G6.mp3" },
     { note: "G#6", isBlack: true,  fileName: "Gs6.mp3" },
     { note: "A6",  isBlack: false, fileName: "A6.mp3" },
@@ -66,27 +68,27 @@ const Piano: React.FC = () => {
     { note: "B6",  isBlack: false, fileName: "B6.mp3" },
   ];
 
-  // oak texture preloading
+  // Preload oak texture
   useEffect(() => {
     const img = new Image();
     img.src = oakTexture;
     img.onload = () => setImageLoaded(true);
   }, []);
 
+  // Initialize sampler
   useEffect(() => {
     const samplerInstance = new Tone.Sampler({
       urls: keys.reduce((acc, key) => ({ ...acc, [key.note]: key.fileName }), {}),
       baseUrl: "/samples/piano/",
       onload: () => console.log("Piano samples loaded"),
     }).toDestination();
-  
-    // Add gentle ADSR envelope for smoother sustain and fadeout
-    samplerInstance.attack = 0.03;
-    samplerInstance.release = 1.2;
+
+    samplerInstance.release = 2;
+    samplerInstance.attack = 0;
     samplerInstance.volume.value = -2;
-  
+
     setSampler(samplerInstance);
-  
+
     return () => {
       samplerInstance.dispose();
     };
@@ -97,15 +99,10 @@ const Piano: React.FC = () => {
       if (!sampler) return;
       if (Tone.context.state === "suspended") await Tone.start();
   
-      // Transpose up an octave
-      const [base, octaveStr] = note.match(/^([A-G]#?)(\d)$/)!.slice(1);
-      const octave = parseInt(octaveStr, 10) + 1;
-      const transposed = `${base}${octave}`;
+      // Play the note exactly as is (no transpose)
+      sampler.triggerAttackRelease(note, "2n");
   
-      // Play note with Tone's envelope handling sustain & release
-      sampler.triggerAttackRelease(transposed, "2n");
-  
-      // Visual press
+      // Visual press effect
       setPressedKeys((prev) => new Set(prev).add(note));
       setTimeout(() => {
         setPressedKeys((prev) => {
@@ -117,7 +114,9 @@ const Piano: React.FC = () => {
     },
     [sampler]
   );
+  
 
+  // Handle touch events
   useEffect(() => {
     const container = pianoContainerRef.current;
     if (!container) return;
@@ -129,15 +128,12 @@ const Piano: React.FC = () => {
       if (note) playNote(note);
     };
 
-    container.addEventListener("touchstart", handleTouchStart as EventListener, { passive: false });
+    container.addEventListener("touchstart", handleTouchStart, { passive: false });
 
     return () => {
-      container.removeEventListener("touchstart", handleTouchStart as EventListener);
+      container.removeEventListener("touchstart", handleTouchStart);
     };
   }, [playNote]);
-
-  const whiteKeys = keys.filter((k) => !k.isBlack);
-  const blackKeys = keys.filter((k) => k.isBlack);
 
   return (
     <>
@@ -150,51 +146,19 @@ const Piano: React.FC = () => {
             transition: "opacity 0.5s ease-in-out",
           }}
         >
-          <div className="piano-container" ref={pianoContainerRef} style={{ width: whiteKeys.length * 30 }}>
-            <div className="white-keys">
-              {whiteKeys.map((key) => (
-                <button
-                  data-note={key.note}
-                  key={key.note}
-                  className={`piano-key white-key ${pressedKeys.has(key.note) ? "pressed" : ""}`}
-                  onMouseDown={() => playNote(key.note)}
-                >
-                  <span className="note-label">{key.note}</span>
-                </button>
-              ))}
-            </div>
-
-            <div className="black-keys">
-              {blackKeys.map((key) => {
-                const whiteWidth = 30;
-                const blackWidth = 20;
-
-                const blackToWhiteBefore: Record<string, string> = {
-                  "C#": "C",
-                  "D#": "D",
-                  "F#": "F",
-                  "G#": "G",
-                  "A#": "A",
-                };
-
-                const [noteBase, octave] = key.note.match(/^([A-G]#?)(\d)$/)!.slice(1);
-                const whiteBefore = `${blackToWhiteBefore[noteBase]}${octave}`;
-                const whiteIndex = whiteKeys.findIndex((k) => k.note === whiteBefore);
-                const left = (whiteIndex + 1) * whiteWidth - blackWidth / 2;
-
-                return (
-                  <button
-                    data-note={key.note}
-                    key={key.note}
-                    className={`black-key ${pressedKeys.has(key.note) ? "pressed" : ""}`}
-                    style={{ left }}
-                    onMouseDown={() => playNote(key.note)}
-                  >
-                    <span className="note-label">{key.note}</span>
-                  </button>
-                );
-              })}
-            </div>
+          <div
+            className="piano-container"
+            ref={pianoContainerRef}
+          >
+            {[3, 4, 5].map((octave) => (
+              <PianoKeysSVG
+                key={octave}
+                startOctave={octave}
+                onKeyClick={playNote}
+                width={350}
+                height={125}
+              />
+            ))}
           </div>
         </div>
       ) : (
