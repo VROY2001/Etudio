@@ -51,11 +51,11 @@
 
   <!-- === Black Keys === -->
   <g filter="url(#blackShadow)">
-    <rect x="70"  y="0" width="60" height="160" rx="4" fill="url(#blackKeyGrad)" data-note="Cs3"/>
-    <rect x="170" y="0" width="60" height="160" rx="4" fill="url(#blackKeyGrad)" data-note="Ds3"/>
-    <rect x="370" y="0" width="60" height="160" rx="4" fill="url(#blackKeyGrad)" data-note="Fs3"/>
-    <rect x="470" y="0" width="60" height="160" rx="4" fill="url(#blackKeyGrad)" data-note="Gs3"/>
-    <rect x="570" y="0" width="60" height="160" rx="4" fill="url(#blackKeyGrad)" data-note="As3"/>
+    <rect x="70"  y="0" width="60" height="160" rx="4" fill="url(#blackKeyGrad)" data-note="C#3"/>
+    <rect x="170" y="0" width="60" height="160" rx="4" fill="url(#blackKeyGrad)" data-note="D#3"/>
+    <rect x="370" y="0" width="60" height="160" rx="4" fill="url(#blackKeyGrad)" data-note="F#3"/>
+    <rect x="470" y="0" width="60" height="160" rx="4" fill="url(#blackKeyGrad)" data-note="G#3"/>
+    <rect x="570" y="0" width="60" height="160" rx="4" fill="url(#blackKeyGrad)" data-note="A#3"/>
 
     <rect x="70"  y="0" width="60" height="160" fill="url(#blackKeyReflection)" rx="4"/>
     <rect x="170" y="0" width="60" height="160" fill="url(#blackKeyReflection)" rx="4"/>

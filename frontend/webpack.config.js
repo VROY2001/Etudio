@@ -22,7 +22,13 @@ export default {
     rules: [
       { test: /\.(ts|tsx|js|jsx)$/, exclude: /node_modules/, use: 'babel-loader' },
       { test: /\.css$/, use: ['style-loader', 'css-loader'] },
-      { test: /\.(png|jpg|jpeg|gif|svg)$/, type: 'asset/resource' },
+      {
+        test: /\.svg$/i,
+        issuer: /\.[jt]sx?$/,
+        use: ['@svgr/webpack'],
+      },
+      { test: /\.(png|jpg|jpeg|gif)$/, type: 'asset/resource' },
+
     ],
   },
   plugins: [
