@@ -164,26 +164,13 @@ const Piano: React.FC = () => {
       if (note) playNote(note);
     };
   
-    const handleTouchMove = (e: TouchEvent) => {
-      e.preventDefault();
-      const touch = e.touches[0];
-      const el = document.elementFromPoint(touch.clientX, touch.clientY) as HTMLElement;
-      const note = el?.dataset?.note;
-      if (note && note !== activeTouchNote) {
-        playNote(note);
-        setActiveTouchNote(note);
-      }
-    };
-  
     const handleTouchEnd = () => setActiveTouchNote(null);
   
     container.addEventListener("touchstart", handleTouchStart, { passive: false });
-    container.addEventListener("touchmove", handleTouchMove, { passive: false });
     container.addEventListener("touchend", handleTouchEnd, { passive: false });
   
     return () => {
       container.removeEventListener("touchstart", handleTouchStart);
-      container.removeEventListener("touchmove", handleTouchMove);
       container.removeEventListener("touchend", handleTouchEnd);
     };
   }, [activeTouchNote, playNote]);
