@@ -13,7 +13,7 @@ const Piano: React.FC = () => {
   const [sampler, setSampler] = useState<Tone.Sampler | null>(null);
   const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
   const [imageLoaded, setImageLoaded] = useState(false);
-
+  const [activeTouchNote, setActiveTouchNote] = useState<string | null>(null);
   const pianoContainerRef = useRef<HTMLDivElement>(null);
 
   // Define your keys (you can expand as needed)
@@ -114,26 +114,79 @@ const Piano: React.FC = () => {
     },
     [sampler]
   );
-  
 
-  // Handle touch events
+  // Keyboard input mapping
+  useEffect(() => {
+    const keyMap: Record<string, string> = {
+      q: "C3", 1: "C#3", w: "D3", 2: "D#3", e: "E3",
+      r: "F3", 3: "F#3", t: "G3", 4: "G#3", y: "A3",
+      5: "A#3", u: "B3", i: "C4", 6: "C#4", o: "D4",
+      7: "D#4", p: "E4", "[": "F4", 8: "F#4", "]": "G4",
+      9: "G#4", "\\": "A4", 0: "A#4", "'": "B4",
+      z: "C5", s: "C#5", x: "D5", d: "D#5", c: "E5",
+      v: "F5", g: "F#5", b: "G5", h: "G#5", n: "A5",
+      j: "A#5", m: "B5", ",": "C6", l: "C#6", ".": "D6",
+      ";": "D#6", "/": "E6", " ": "F6"
+    };
+
+    const activeKeys = new Set<string>();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const key = e.key.toLowerCase();
+      if (activeKeys.has(key)) return; // prevent repeat
+      activeKeys.add(key);
+  
+      const note = keyMap[key];
+      if (note) playNote(note);
+    };
+  
+    const handleKeyUp = (e: KeyboardEvent) => {
+      activeKeys.delete(e.key.toLowerCase());
+    };
+  
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+  
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, [playNote]);
+
+  // Touch support
   useEffect(() => {
     const container = pianoContainerRef.current;
     if (!container) return;
-
+  
     const handleTouchStart = (e: TouchEvent) => {
       e.preventDefault();
-      const target = e.target as HTMLElement;
-      const note = target.dataset.note;
+      const note = (e.target as HTMLElement)?.dataset?.note;
       if (note) playNote(note);
     };
-
+  
+    const handleTouchMove = (e: TouchEvent) => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const el = document.elementFromPoint(touch.clientX, touch.clientY) as HTMLElement;
+      const note = el?.dataset?.note;
+      if (note && note !== activeTouchNote) {
+        playNote(note);
+        setActiveTouchNote(note);
+      }
+    };
+  
+    const handleTouchEnd = () => setActiveTouchNote(null);
+  
     container.addEventListener("touchstart", handleTouchStart, { passive: false });
-
+    container.addEventListener("touchmove", handleTouchMove, { passive: false });
+    container.addEventListener("touchend", handleTouchEnd, { passive: false });
+  
     return () => {
       container.removeEventListener("touchstart", handleTouchStart);
+      container.removeEventListener("touchmove", handleTouchMove);
+      container.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [playNote]);
+  }, [activeTouchNote, playNote]);
 
   return (
     <>
@@ -150,13 +203,11 @@ const Piano: React.FC = () => {
             className="piano-container"
             ref={pianoContainerRef}
           >
-            {[3, 4, 5].map((octave) => (
+            {[3, 4, 5, 6].map((octave) => (
               <PianoKeysSVG
                 key={octave}
                 startOctave={octave}
                 onKeyClick={playNote}
-                width={350}
-                height={125}
               />
             ))}
           </div>

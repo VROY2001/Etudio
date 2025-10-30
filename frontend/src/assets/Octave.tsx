@@ -2,20 +2,35 @@ import React from "react";
 
 interface PianoKeysSVGProps extends React.SVGProps<SVGSVGElement> {
   onKeyClick?: (note: string) => void;
-  startOctave?: number; // new
-  width?: number;
-  height?: number;
+  startOctave?: number;
 }
 
 const whiteKeys = ["C", "D", "E", "F", "G", "A", "B"];
 const blackKeys = ["C#", "D#", "F#", "G#", "A#"];
 const blackOffsets = [70, 170, 370, 470, 570];
 
+// Master key map (matches your app)
+const keyMap: Record<string, string> = {
+  q: "C3", 1: "C#3", w: "D3", 2: "D#3", e: "E3",
+  r: "F3", 3: "F#3", t: "G3", 4: "G#3", y: "A3",
+  5: "A#3", u: "B3", i: "C4", 6: "C#4", o: "D4",
+  7: "D#4", p: "E4", "[": "F4", 8: "F#4", "]": "G4",
+  9: "G#4", "\\": "A4", 0: "A#4", "'": "B4",
+  z: "C5", s: "C#5", x: "D5", d: "D#5", c: "E5",
+  v: "F5", g: "F#5", b: "G5", h: "G#5", n: "A5",
+  j: "A#5", m: "B5", ",": "C6", l: "C#6", ".": "D6",
+  ";": "D#6", "/": "E6", " ": "F6"
+};
+
+// Reverse lookup: note -> key label
+const noteToKeyLabel = Object.entries(keyMap).reduce<Record<string, string>>(
+  (acc, [key, note]) => ({ ...acc, [note]: key.toUpperCase() }),
+  {}
+);
+
 const PianoKeysSVG: React.FC<PianoKeysSVGProps> = ({
   onKeyClick,
   startOctave = 3,
-  width = 350,
-  height = 125,
   ...props
 }) => {
   const handleClick = (e: React.MouseEvent<SVGRectElement, MouseEvent>) => {
@@ -114,11 +129,29 @@ const PianoKeysSVG: React.FC<PianoKeysSVGProps> = ({
         ))}
       </g>
 
-      {/* Labels */}
-      <g fontFamily="Arial, sans-serif" fontSize={18} textAnchor="middle" fill="#333">
-        {whiteKeys.map((label, i) => (
-          <text key={label} x={i * 100 + 50} y={240}>
-            {label}
+      {/* Keyboard Labels */}
+      <g fontFamily="Arial, sans-serif" fontSize={16} textAnchor="middle">
+        {/* White key labels */}
+        {whiteNoteNames.map((note, i) => (
+          <text
+            key={`label-${note}`}
+            x={i * 100 + 50}
+            y={230}
+            fill="#333"
+          >
+            {noteToKeyLabel[note] || ""}
+          </text>
+        ))}
+
+        {/* Black key labels */}
+        {blackNoteNames.map((note, i) => (
+          <text
+            key={`label-${note}`}
+            x={blackOffsets[i] + 30}
+            y={140}
+            fill="#fff"
+          >
+            {noteToKeyLabel[note] || ""}
           </text>
         ))}
       </g>
